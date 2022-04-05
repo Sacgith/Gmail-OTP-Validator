@@ -18,7 +18,7 @@ const mailer = (email, options) => {
     from: "mailsender78612@gmail.com",
     to: email,
     subject: "Verify Gmail for MERN",
-    text: options.length?options:"You have successfully"
+    text: options.length ? options : "You have successfully",
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
