@@ -2,7 +2,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaUser } from "react-icons/fa";
 import { register, reset } from "../features/auth/authSlice";
@@ -15,8 +15,10 @@ const Register = () => {
     email: "",
     password: "",
     password2: "",
+    college: "",
+    stream: "",
   });
-  const { name, email, password, password2 } = formData;
+  const { name, email, password, password2, college, stream } = formData;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, isLoading, isError, isSuccess, message } = useSelector(
@@ -48,6 +50,8 @@ const Register = () => {
         name,
         email,
         password,
+        college,
+        stream
       };
       dispatch(register(userData));
     }
@@ -109,7 +113,30 @@ const Register = () => {
             />
           </div>
           <div className="form-group">
-            <button type="submit" className="btn btn-block">
+            <input
+              type="text"
+              className="form-control"
+              id="college"
+              name="college"
+              value={college}
+              placeholder="enter your college name"
+              onChange={onChange}
+            />
+          </div>
+          <div className="form-group">
+            <input
+              type="text"
+              className="form-control"
+              id="stream"
+              name="stream"
+              value={stream}
+              placeholder="enter your branch"
+              onChange={onChange}
+            />
+          </div>
+
+          <div className="form-group">
+            <button type="submit" className="btn btn-block btn-dark">
               Submit
             </button>
           </div>

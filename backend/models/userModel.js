@@ -21,9 +21,7 @@ const userSchema = mongoose.Schema(
     stream: {
       type: String,
     },
-    degree: {
-      type: String,
-    },
+    
   },
   {
     timestamps: true,

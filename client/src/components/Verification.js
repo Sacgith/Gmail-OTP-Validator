@@ -16,16 +16,16 @@ const Verification = () => {
   const [formData, setFormData] = useState({
     otp: "",
   });
-  const [checked, setChecked]=useState(false);
+  const [checked, setChecked] = useState(false);
   const dispatch = useDispatch();
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
   const { otp } = formData;
 
-  useEffect(()=>{
-    if(checked){
-      navigate('/');
+  useEffect(() => {
+    if (checked) {
+      navigate("/profile");
     }
   }, [navigate, checked]);
 
@@ -38,7 +38,7 @@ const Verification = () => {
       toast.success("Please check your mail!");
       await axios.post("/users/mail", {
         email: user.email,
-        code: random.toString()
+        code: random.toString(),
       });
     } catch (error) {
       toast.error(error);
@@ -56,29 +56,27 @@ const Verification = () => {
     if (otp.toString() === otpCheck.toString()) {
       try {
         setChecked(true);
-        const temp="23";
+        const temp = "23";
         toast.success("You have registered successfully!!");
         const message = "You registered successfully";
         await axios.post("/users/mail", {
           email: user.email,
           code: temp,
         });
-       
-        
       } catch (error) {
         toast.error("Please Enter correct OTP");
       }
     } else {
       toast.error("Wrong OTP");
     }
-   setChecked(true);
+    setChecked(true);
   };
   console.log("sent ", sent);
   return (
     <>
       {!sent ? (
         <>
-          <button type="submit" className="btn btn-block" onClick={sendOTP}>
+          <button type="submit" className="btn btn-block btn-dark" onClick={sendOTP}>
             Send Mail
           </button>
         </>
@@ -93,11 +91,11 @@ const Verification = () => {
                 name="otp"
                 value={otp}
                 onChange={onChange}
-                placeholder="enter otp"
+                placeholder="Enter OTP"
               />
             </div>
             <div className="form-group">
-              <button type="submit" className="btn btn-block">
+              <button type="submit" className="btn btn-block btn-dark">
                 verify
               </button>
             </div>

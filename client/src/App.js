@@ -15,6 +15,7 @@ function App() {
     <>
       <Router>
         <Navb />
+        <h1>First Register Yourself or Login</h1>
         <Routes>
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />

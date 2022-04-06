@@ -37,7 +37,7 @@ const mailer = asyncHandler(async (req, res) => {
 });
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, college, stream } = req.body;
   if (!name || !email || !password) {
     res.status(400);
     throw new Error("Please add all the fields");
@@ -55,6 +55,8 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     name,
     email,
+    college,
+    stream,
     password: hashedPassword,
   });
 
@@ -65,7 +67,6 @@ const registerUser = asyncHandler(async (req, res) => {
       email: user.email,
       college: user.college,
       stream: user.stream,
-      degree: user.degree,
       token: generateToken(user._id),
     });
   } else {
@@ -86,7 +87,7 @@ const loginUser = asyncHandler(async (req, res) => {
       email: user.email,
       college: user.college,
       stream: user.stream,
-      degree: user.degree,
+
       token: generateToken(user._id),
     });
   } else {
@@ -99,16 +100,19 @@ const getProfile = asyncHandler(async (req, res) => {
   res.status(200).json(req.user);
 });
 
-const updateProfile=asyncHandler(async(req, res)=>{
-  const {name, degree, stream, college}=req.body;
-  const newProfile={
-    name, degree, stream, college
+const updateProfile = asyncHandler(async (req, res) => {
+  const { name, stream, college } = req.body;
+  const newProfile = {
+    name,
+    stream,
+    college,
   };
-  const profile=await User.findOne({user:req.user.id});
+  const profile = await User.findOne({ user: req.user.id });
   profile.unshift(newProfile);
   await profile.save();
-  res.status(200);json(profile);
-})
+  res.status(200);
+  json(profile);
+});
 
 const allUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
@@ -125,9 +129,8 @@ const generateToken = (id) => {
 module.exports = {
   registerUser,
   loginUser,
-  userProfile,
   mailer,
   allUsers,
   updateProfile,
-  getProfile
+  getProfile,
 };

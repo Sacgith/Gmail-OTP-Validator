@@ -26,7 +26,7 @@ const Login = () => {
       toast.error(message);
     }
     if (isSuccess || user) {
-      navigate("/");
+      navigate("/profile");
     }
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
@@ -82,8 +82,8 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <button type="submit" className="btn btn-block">
-              Submit
+            <button type="submit" className="btn btn-block btn-dark">
+              Login
             </button>
           </div>
         </form>
