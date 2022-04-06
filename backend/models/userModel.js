@@ -15,6 +15,15 @@ const userSchema = mongoose.Schema(
       type: String,
       require: [true, "Please add a password"],
     },
+    college: {
+      type: String,
+    },
+    stream: {
+      type: String,
+    },
+    degree: {
+      type: String,
+    },
   },
   {
     timestamps: true,

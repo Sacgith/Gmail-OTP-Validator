@@ -4,12 +4,16 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const nodemailer = require("nodemailer");
 const { response } = require("express");
+const { json } = require("body-parser");
 
 const mailer = asyncHandler(async (req, res) => {
   const { email, code } = req.body;
   console.log(email, code);
   console.log(req.body);
-  const message=code.toString().length>=3?`OTP for email verification ${code}`:"You have successfully registered!";
+  const message =
+    code.toString().length >= 3
+      ? `OTP for email verification ${code}`
+      : "You have successfully registered!";
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -21,7 +25,7 @@ const mailer = asyncHandler(async (req, res) => {
     from: "mailsender78612@gmail.com",
     to: email,
     subject: "Verify Gmail for MERN",
-    text: message.toString()
+    text: message.toString(),
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
@@ -59,6 +63,9 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      college: user.college,
+      stream: user.stream,
+      degree: user.degree,
       token: generateToken(user._id),
     });
   } else {
@@ -77,6 +84,9 @@ const loginUser = asyncHandler(async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      college: user.college,
+      stream: user.stream,
+      degree: user.degree,
       token: generateToken(user._id),
     });
   } else {
@@ -85,14 +95,20 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-const userProfile = asyncHandler(async (req, res) => {
-  const { _id, name, email } = await User.findById(req.user.id);
-  res.status(200).json({
-    id: _id,
-    name,
-    email,
-  });
+const getProfile = asyncHandler(async (req, res) => {
+  res.status(200).json(req.user);
 });
+
+const updateProfile=asyncHandler(async(req, res)=>{
+  const {name, degree, stream, college}=req.body;
+  const newProfile={
+    name, degree, stream, college
+  };
+  const profile=await User.findOne({user:req.user.id});
+  profile.unshift(newProfile);
+  await profile.save();
+  res.status(200);json(profile);
+})
 
 const allUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
@@ -105,10 +121,13 @@ const generateToken = (id) => {
     expiresIn: "1d",
   });
 };
+
 module.exports = {
   registerUser,
   loginUser,
   userProfile,
   mailer,
   allUsers,
+  updateProfile,
+  getProfile
 };
