@@ -30,28 +30,22 @@ export const register = createAsyncThunk(
   }
 );
 
-//Login user 
-export const login = createAsyncThunk(
-  "/user/login",
-  async (user, thunkAPI) => {
-    try {
-      return await authService.login(user);
-    } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
+//Login user
+export const login = createAsyncThunk("/user/login", async (user, thunkAPI) => {
+  try {
+    return await authService.login(user);
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    return thunkAPI.rejectWithValue(message);
   }
-);
+});
 
 export const logout = createAsyncThunk("auth/logout", async () => {
   await authService.logout();
 });
-
 
 export const authSlice = createSlice({
   name: "auth",

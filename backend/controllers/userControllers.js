@@ -2,11 +2,14 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
-const OTP = require("../models/otpModel");
 const nodemailer = require("nodemailer");
 const { response } = require("express");
 
-const mailer = (email, options) => {
+const mailer = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
+  console.log(email, code);
+  console.log(req.body);
+  const message=code.toString().length>=3?`OTP for email verification ${code}`:"You have successfully registered!";
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -18,7 +21,7 @@ const mailer = (email, options) => {
     from: "mailsender78612@gmail.com",
     to: email,
     subject: "Verify Gmail for MERN",
-    text: options.length ? options : "You have successfully",
+    text: message.toString()
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
@@ -27,51 +30,6 @@ const mailer = (email, options) => {
       console.log("Email sent:" + info.response);
     }
   });
-};
-
-const emailSend = asyncHandler(async (req, res) => {
-  const data = await User.findOne({ email: req.body.email });
-  if (data) {
-    await OTP.deleteMany({ email });
-    let otpCode = Math.floor(1000 + Math.random() * 9000);
-    console.log(otpCode);
-    let otpData = new OTP({
-      email,
-      code: otpCode,
-      expiresIn: Date.now() + 300 * 1000,
-    });
-    if (otpData) {
-      await otpData.save();
-      mailer(email, `OTP for gmail verification is ${otpCode}`);
-      res.status(200).json({
-        message: "Please Check your mail id",
-      });
-    }
-  } else {
-    res.status(400);
-    throw new Error("Email Couldn't Sent");
-  }
-});
-const verifyEmail = asyncHandler(async (req, res) => {
-  const data = await OTP.find({
-    email: req.body.email,
-    code: req.body.code,
-  });
-  console.log(data.length);
-  if (data.length == 0) {
-    res.status(400);
-    throw new Error("Invalid OTP or Email");
-  } else {
-    const expiresIn = data[0].expiresIn;
-    let currentTime = Date.now();
-    if (expiresIn - currentTime >= 0) {
-      mailer(data[0].email, "You have successfully registered");
-      res.status(200).json({ message: "Email verified" });
-    } else {
-      res.status(400);
-      throw new Error("Token Expired");
-    }
-  }
 });
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -97,16 +55,6 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    let otpCode = Math.floor(1000 + Math.random() * 9000);
-    console.log(otpCode);
-    let otpData = new OTP({
-      email,
-      code: otpCode,
-      expiresIn: Date.now() + 300 * 1000,
-    });
-    await otpData.save();
-    mailer(email, `OTP for gmail verification is ${otpCode}`);
-
     res.status(201).json({
       _id: user.id,
       name: user.name,
@@ -157,13 +105,10 @@ const generateToken = (id) => {
     expiresIn: "1d",
   });
 };
-
 module.exports = {
   registerUser,
   loginUser,
   userProfile,
-  emailSend,
-  verifyEmail,
   mailer,
   allUsers,
 };
